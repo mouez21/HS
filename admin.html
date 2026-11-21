@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Management</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Store Admin - Product Variants & Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-50 text-slate-800 p-4 md:p-8 min-h-screen">
@@ -18,7 +16,7 @@
                 <i class="fa-solid fa-lock"></i>
             </div>
             <h2 class="font-bold text-xl text-slate-900">Admin Login</h2>
-            <p class="text-xs text-slate-500">Enter your PIN to manage products and store settings.</p>
+            <p class="text-xs text-slate-500">Enter your PIN to manage products, variants, and store settings.</p>
             <input type="password" id="pin-input" placeholder="Enter PIN (Default: 1234)" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-center text-lg font-bold tracking-widest focus:ring-2 focus:ring-emerald-500 outline-none">
             <button onclick="authenticateAdmin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition">Login to Dashboard</button>
         </div>
@@ -31,7 +29,7 @@
         <div class="flex items-center justify-between border-b pb-4">
             <div>
                 <h1 id="admin-store-name" class="font-bold text-2xl text-slate-900">Store Admin</h1>
-                <p class="text-xs text-slate-500">Manage Menu Items, Categories & Settings</p>
+                <p class="text-xs text-slate-500">Manage Menu Items, Product Variants, Opening Hours & Settings</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="index.html" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5">
@@ -45,17 +43,20 @@
 
         <!-- ADMIN TABS -->
         <div class="flex border-b border-slate-200 gap-6 text-sm font-medium text-slate-500">
-            <button onclick="switchTab('items')" id="tab-btn-items" class="py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold">Manage Menu Items</button>
+            <button onclick="switchTab('items')" id="tab-btn-items" class="py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold">Manage Products & Variants</button>
             <button onclick="switchTab('categories')" id="tab-btn-categories" class="py-2 hover:text-slate-700">Categories</button>
-            <button onclick="switchTab('settings')" id="tab-btn-settings" class="py-2 hover:text-slate-700">Store Settings</button>
+            <button onclick="switchTab('settings')" id="tab-btn-settings" class="py-2 hover:text-slate-700">Store & Hours Settings</button>
         </div>
 
-        <!-- TAB 1: MENU ITEMS -->
+        <!-- TAB 1: MENU ITEMS & VARIANTS -->
         <div id="admin-tab-items" class="space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="font-bold text-slate-800 text-lg">Menu Items</h2>
+                <div>
+                    <h2 class="font-bold text-slate-800 text-lg">Products Menu</h2>
+                    <p class="text-xs text-slate-500">Add products with custom size variants, options, and add-ons.</p>
+                </div>
                 <button onclick="openItemModal()" class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-plus"></i> Add New Item
+                    <i class="fa-solid fa-plus"></i> Add New Product
                 </button>
             </div>
 
@@ -77,27 +78,52 @@
             </ul>
         </div>
 
-        <!-- TAB 3: STORE SETTINGS -->
-        <div id="admin-tab-settings" class="hidden space-y-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h2 class="font-bold text-slate-800 text-lg border-b pb-3">Store Configuration</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Restaurant Name</label>
-                    <input type="text" id="setting-name" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+        <!-- TAB 3: STORE & HOURS SETTINGS -->
+        <div id="admin-tab-settings" class="hidden space-y-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <div>
+                <h2 class="font-bold text-slate-800 text-lg border-b pb-3">Store Configuration</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm pt-4">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Restaurant Name</label>
+                        <input type="text" id="setting-name" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">WhatsApp Phone Number (with country code)</label>
+                        <input type="text" id="setting-phone" placeholder="e.g. 1234567890" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Currency Symbol</label>
+                        <input type="text" id="setting-currency" placeholder="$" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Greeting / Subtitle</label>
+                        <input type="text" id="setting-greeting" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
                 </div>
+            </div>
+
+            <div class="border-t pt-5 space-y-4">
                 <div>
-                    <label class="block font-medium text-slate-700 mb-1">WhatsApp Phone Number (with country code)</label>
-                    <input type="text" id="setting-phone" placeholder="e.g. 1234567890" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <h3 class="font-bold text-slate-800 text-base">Opening & Closing Hours</h3>
+                    <p class="text-xs text-slate-500">The customer page sign automatically shows OPEN or CLOSED based on the visitor's local clock.</p>
                 </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Currency Symbol</label>
-                    <input type="text" id="setting-currency" placeholder="$" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Opening Time</label>
+                        <input type="time" id="setting-open-time" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Closing Time</label>
+                        <input type="time" id="setting-close-time" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
                 </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Greeting / Subtitle</label>
-                    <input type="text" id="setting-greeting" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
+
+                <label class="flex items-center gap-2.5 text-sm text-slate-700 cursor-pointer pt-1">
+                    <input type="checkbox" id="setting-force-closed" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500">
+                    <span>Force restaurant to show <strong>CLOSED</strong> right now (overrides opening hours)</span>
+                </label>
             </div>
 
             <div class="pt-2">
@@ -107,9 +133,9 @@
 
     </div>
 
-    <!-- ITEM EDIT MODAL -->
+    <!-- ITEM / VARIANT EDIT MODAL -->
     <div id="item-modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+        <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
             <div id="modal-content" class="overflow-y-auto flex-1 p-6">
                 <!-- Dynamic Content for Admin Form -->
             </div>
@@ -122,6 +148,9 @@
             greeting: "Fresh & Artisanal Dishes",
             phone: "1234567890",
             currency: "$",
+            openTime: "09:00",
+            closeTime: "22:00",
+            forceClosed: false,
             categories: ["All", "Burgers", "Pizzas", "Drinks", "Desserts"],
             items: [
                 {
@@ -131,7 +160,26 @@
                     price: 9.99,
                     category: "Burgers",
                     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=80",
-                    optionGroups: []
+                    optionGroups: [
+                        {
+                            name: "Select Patty Size",
+                            type: "single",
+                            options: [
+                                { name: "Single Patty", price: 0 },
+                                { name: "Double Patty", price: 3.50 },
+                                { name: "Triple Patty", price: 5.50 }
+                            ]
+                        },
+                        {
+                            name: "Add Extra Toppings",
+                            type: "multiple",
+                            options: [
+                                { name: "Extra Bacon", price: 1.50 },
+                                { name: "Caramelized Onions", price: 0.75 },
+                                { name: "Melted Cheddar", price: 1.00 }
+                            ]
+                        }
+                    ]
                 },
                 {
                     id: "2",
@@ -140,21 +188,50 @@
                     price: 12.50,
                     category: "Pizzas",
                     image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&auto=format&fit=crop&q=80",
-                    optionGroups: []
+                    optionGroups: [
+                        {
+                            name: "Choose Size",
+                            type: "single",
+                            options: [
+                                { name: "Medium 10 inch", price: 0 },
+                                { name: "Large 14 inch", price: 4.00 },
+                                { name: "Family 18 inch", price: 8.00 }
+                            ]
+                        },
+                        {
+                            name: "Crust Type",
+                            type: "single",
+                            options: [
+                                { name: "Thin Crust", price: 0 },
+                                { name: "Cheese Stuffed Crust", price: 2.50 }
+                            ]
+                        }
+                    ]
                 }
             ]
         };
 
-        let store = JSON.parse(localStorage.getItem('wh_store_data')) || DEFAULT_STORE;
+        function getStoreData() {
+            const data = localStorage.getItem('wh_store_data');
+            if (!data) {
+                localStorage.setItem('wh_store_data', JSON.stringify(DEFAULT_STORE));
+                return DEFAULT_STORE;
+            }
+            return { ...DEFAULT_STORE, ...JSON.parse(data) };
+        }
+
+        let store = getStoreData();
+        let activeOptionGroups = [];
 
         function authenticateAdmin() {
             const pin = document.getElementById('pin-input').value;
-            if (pin === "1234" || pin === "") { // Default PIN: 1234
+            if (pin === "1234" || pin === "") {
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('admin-content').classList.remove('hidden');
                 document.getElementById('admin-store-name').textContent = store.name + " Admin";
                 renderAdminItems();
                 renderAdminCategories();
+                loadSettings();
             } else {
                 alert("Incorrect PIN code!");
             }
@@ -183,17 +260,33 @@
 
         function renderAdminItems() {
             const container = document.getElementById('admin-items-list');
+            if (!store.items || store.items.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-xl border">No products yet. Click "Add New Product" above.</div>`;
+                return;
+            }
             container.innerHTML = store.items.map(item => `
-                <div class="bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
-                    <div class="flex items-center gap-3">
-                        ${item.image ? `<img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">` : '<div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400"><i class="fa-solid fa-utensils"></i></div>'}
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-3">
+                        ${item.image ? `<img src="${item.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : '<div class="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0"><i class="fa-solid fa-utensils"></i></div>'}
                         <div>
-                            <h4 class="font-bold text-slate-800">${item.name}</h4>
-                            <div class="text-xs text-slate-500">${item.category} • ${store.currency}${item.price.toFixed(2)}</div>
+                            <h4 class="font-bold text-slate-800 text-base">${item.name}</h4>
+                            <div class="text-xs text-slate-500 font-medium">${item.category} • Base Price: <span class="text-emerald-600 font-bold">${store.currency}${parseFloat(item.price).toFixed(2)}</span></div>
+                            
+                            ${(item.optionGroups && item.optionGroups.length > 0) ? `
+                                <div class="flex flex-wrap gap-1 mt-1.5">
+                                    ${item.optionGroups.map(grp => `
+                                        <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200">
+                                            <i class="fa-solid fa-tags text-[9px] text-slate-400"></i> ${grp.name} (${grp.options.length} variants)
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            ` : `<div class="text-[11px] text-slate-400 italic mt-0.5">No variants attached</div>`}
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="openItemModal('${item.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Edit</button>
+                    <div class="flex gap-2 justify-end">
+                        <button onclick="openItemModal('${item.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Product & Variants
+                        </button>
                         <button onclick="deleteMenuItem('${item.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold">Delete</button>
                     </div>
                 </div>
@@ -205,149 +298,48 @@
                 id: Date.now().toString(),
                 name: '',
                 description: '',
-                price: 0,
-                category: store.categories[1] || 'Burgers',
+                price: '',
+                category: store.categories.find(c => c !== "All") || 'Burgers',
                 image: '',
                 optionGroups: []
             };
+
+            activeOptionGroups = JSON.parse(JSON.stringify(item.optionGroups || []));
 
             const modal = document.getElementById('item-modal-overlay');
             const content = document.getElementById('modal-content');
 
             content.innerHTML = `
                 <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-900 text-lg">${itemId ? 'Edit Menu Item' : 'Add New Menu Item'}</h3>
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-lg">${itemId ? 'Edit Product & Variants' : 'Add New Product'}</h3>
+                            <p class="text-xs text-slate-500">Define base product info and attach variant groups (sizes, options, add-ons).</p>
+                        </div>
                         <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
                     </div>
 
-                    <form id="admin-item-form" onsubmit="saveMenuItem(event, '${item.id}')" class="space-y-3 text-sm">
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Item Name</label>
-                            <input type="text" id="admin-item-name" value="${item.name}" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
+                    <form id="admin-item-form" onsubmit="saveMenuItem(event, '${item.id}')" class="space-y-4 text-sm">
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b pb-1">1. Basic Details</h4>
                             <div>
-                                <label class="block font-medium text-slate-700 mb-1">Price (${store.currency})</label>
-                                <input type="number" step="0.01" id="admin-item-price" value="${item.price}" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <label class="block font-medium text-slate-700 mb-1">Product Name *</label>
+                                <input type="text" id="admin-item-name" value="${item.name}" required placeholder="e.g. Gourmet Burger" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                             </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Base Price (${store.currency}) *</label>
+                                    <input type="number" step="0.01" id="admin-item-price" value="${item.price}" required placeholder="9.99" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Category *</label>
+                                    <select id="admin-item-category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                                        ${store.categories.filter(c => c !== "All").map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+
                             <div>
-                                <label class="block font-medium text-slate-700 mb-1">Category</label>
-                                <select id="admin-item-category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                                    ${store.categories.filter(c => c !== "All").map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Description</label>
-                            <textarea id="admin-item-desc" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">${item.description}</textarea>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Image URL</label>
-                            <input type="url" id="admin-item-image" value="${item.image || ''}" placeholder="https://..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-
-                        <div class="pt-3 flex justify-end gap-2">
-                            <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancel</button>
-                            <button type="submit" class="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700">Save Item</button>
-                        </div>
-                    </form>
-                </div>
-            `;
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('item-modal-overlay').classList.add('hidden');
-        }
-
-        function saveMenuItem(e, itemId) {
-            e.preventDefault();
-            const name = document.getElementById('admin-item-name').value.trim();
-            const price = parseFloat(document.getElementById('admin-item-price').value);
-            const category = document.getElementById('admin-item-category').value;
-            const description = document.getElementById('admin-item-desc').value.trim();
-            const image = document.getElementById('admin-item-image').value.trim();
-
-            const existingIndex = store.items.findIndex(i => i.id === itemId);
-            const itemObj = {
-                id: itemId,
-                name,
-                price,
-                category,
-                description,
-                image,
-                optionGroups: existingIndex >= 0 ? store.items[existingIndex].optionGroups : []
-            };
-
-            if (existingIndex >= 0) {
-                store.items[existingIndex] = itemObj;
-            } else {
-                store.items.push(itemObj);
-            }
-
-            saveStore();
-            closeModal();
-            renderAdminItems();
-        }
-
-        function deleteMenuItem(itemId) {
-            if (confirm("Are you sure you want to delete this menu item?")) {
-                store.items = store.items.filter(i => i.id !== itemId);
-                saveStore();
-                renderAdminItems();
-            }
-        }
-
-        function renderAdminCategories() {
-            const container = document.getElementById('admin-categories-list');
-            container.innerHTML = store.categories.filter(c => c !== "All").map(cat => `
-                <li class="p-3 flex justify-between items-center text-sm font-medium text-slate-700">
-                    <span>${cat}</span>
-                    <button onclick="deleteCategory('${cat}')" class="text-red-500 hover:underline text-xs">Remove</button>
-                </li>
-            `).join('');
-        }
-
-        function addCategory() {
-            const input = document.getElementById('new-category-input');
-            const val = input.value.trim();
-            if (val && !store.categories.includes(val)) {
-                store.categories.push(val);
-                saveStore();
-                input.value = '';
-                renderAdminCategories();
-            }
-        }
-
-        function deleteCategory(cat) {
-            if (confirm(`Delete category "${cat}"?`)) {
-                store.categories = store.categories.filter(c => c !== cat);
-                saveStore();
-                renderAdminCategories();
-            }
-        }
-
-        function loadSettings() {
-            document.getElementById('setting-name').value = store.name;
-            document.getElementById('setting-phone').value = store.phone;
-            document.getElementById('setting-currency').value = store.currency;
-            document.getElementById('setting-greeting').value = store.greeting;
-        }
-
-        function saveSettings() {
-            store.name = document.getElementById('setting-name').value.trim() || store.name;
-            store.phone = document.getElementById('setting-phone').value.trim() || store.phone;
-            store.currency = document.getElementById('setting-currency').value.trim() || store.currency;
-            store.greeting = document.getElementById('setting-greeting').value.trim() || store.greeting;
-
-            saveStore();
-            alert("Settings saved successfully!");
-        }
-    </script>
-</body>
-</html>
+                                <label class="block font-medium text-slate-700 mb-1">Description</label>
+                                <textarea id="admin-item-desc" rows="2" placeholder="Ingredients, taste profile..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">${item.desc2
