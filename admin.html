@@ -11,7 +11,7 @@
 
     <!-- MAIN ADMIN CONTENT -->
     <div id="admin-content" class="max-w-4xl mx-auto space-y-6">
-        
+
         <!-- HEADER -->
         <div class="flex items-center justify-between border-b pb-4 flex-wrap gap-3">
             <div>
@@ -22,17 +22,20 @@
                 <a href="index.html" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-store"></i> View Storefront
                 </a>
-                <button type="button" onclick="resetDemoData()" class="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-1 cursor-pointer">
+                <button type="button" id="reset-demo-btn" class="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-rotate-left"></i> Reset Demo
                 </button>
             </div>
         </div>
 
+        <!-- STATUS MESSAGE BANNER -->
+        <div id="admin-feedback" class="hidden p-3 rounded-xl text-xs font-semibold border"></div>
+
         <!-- ADMIN TABS -->
         <div class="flex border-b border-slate-200 gap-6 text-sm font-medium text-slate-500">
-            <button type="button" onclick="switchTab('items')" id="tab-btn-items" class="py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold cursor-pointer">Manage Products & Variants</button>
-            <button type="button" onclick="switchTab('categories')" id="tab-btn-categories" class="py-2 hover:text-slate-700 cursor-pointer">Categories</button>
-            <button type="button" onclick="switchTab('settings')" id="tab-btn-settings" class="py-2 hover:text-slate-700 cursor-pointer">Store & Hours Settings</button>
+            <button type="button" data-tab="items" id="tab-btn-items" class="admin-tab-btn py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold cursor-pointer">Manage Products & Variants</button>
+            <button type="button" data-tab="categories" id="tab-btn-categories" class="admin-tab-btn py-2 hover:text-slate-700 cursor-pointer">Categories</button>
+            <button type="button" data-tab="settings" id="tab-btn-settings" class="admin-tab-btn py-2 hover:text-slate-700 cursor-pointer">Store & Hours Settings</button>
         </div>
 
         <!-- TAB 1: MENU ITEMS & VARIANTS -->
@@ -42,14 +45,12 @@
                     <h2 class="font-bold text-slate-800 text-lg">Products Menu</h2>
                     <p class="text-xs text-slate-500">Add products with custom size variants, options, and add-ons.</p>
                 </div>
-                <button type="button" onclick="openItemModal()" class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition shadow-sm flex items-center gap-2 cursor-pointer">
+                <button type="button" id="add-product-btn" class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition shadow-sm flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-plus"></i> Add New Product
                 </button>
             </div>
 
-            <div id="admin-items-list" class="space-y-3">
-                <!-- Rendered dynamically -->
-            </div>
+            <div id="admin-items-list" class="space-y-3"></div>
         </div>
 
         <!-- TAB 2: CATEGORIES -->
@@ -57,19 +58,17 @@
             <h2 class="font-bold text-slate-800 text-lg">Categories</h2>
             <div class="flex gap-2">
                 <input type="text" id="new-category-input" placeholder="Category name..." class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                <button type="button" onclick="addCategory()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 cursor-pointer">Add Category</button>
+                <button type="button" id="add-category-btn" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 cursor-pointer">Add Category</button>
             </div>
 
-            <ul id="admin-categories-list" class="divide-y divide-slate-100 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <!-- Rendered dynamically -->
-            </ul>
+            <ul id="admin-categories-list" class="divide-y divide-slate-100 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"></ul>
         </div>
 
         <!-- TAB 3: STORE & HOURS SETTINGS -->
         <div id="admin-tab-settings" class="hidden space-y-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
             <div>
                 <h2 class="font-bold text-slate-800 text-lg border-b pb-3">Store Configuration</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm pt-4">
                     <div>
                         <label class="block font-medium text-slate-700 mb-1">Restaurant Name</label>
@@ -114,7 +113,7 @@
             </div>
 
             <div class="pt-2">
-                <button type="button" onclick="saveSettings()" class="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition cursor-pointer">Save Settings</button>
+                <button type="button" id="save-settings-btn" class="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition cursor-pointer">Save Settings</button>
             </div>
         </div>
 
@@ -196,153 +195,168 @@
             ]
         };
 
+        let memoryFallbackStore = JSON.parse(JSON.stringify(DEFAULT_STORE));
+
+        function escapeHtml(str) {
+            return String(str ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function showFeedback(message, isError = false) {
+            const box = document.getElementById("admin-feedback");
+            if (!box) return;
+            box.textContent = message;
+            box.className = isError
+                ? "p-3 rounded-xl text-xs font-semibold border bg-rose-50 text-rose-700 border-rose-200"
+                : "p-3 rounded-xl text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200";
+            box.classList.remove("hidden");
+            clearTimeout(showFeedback._timer);
+            showFeedback._timer = setTimeout(() => {
+                box.classList.add("hidden");
+            }, 3500);
+        }
+
         function getStoreData() {
             try {
-                const raw = localStorage.getItem('wh_store_data');
-                if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STORE));
+                const raw = window.localStorage.getItem("wh_store_data");
+                if (!raw) return JSON.parse(JSON.stringify(memoryFallbackStore));
                 const parsed = JSON.parse(raw);
-                return {
+                const merged = {
                     ...DEFAULT_STORE,
                     ...parsed,
                     categories: Array.isArray(parsed.categories) && parsed.categories.length ? parsed.categories : DEFAULT_STORE.categories,
                     items: Array.isArray(parsed.items) ? parsed.items : DEFAULT_STORE.items
                 };
+                memoryFallbackStore = JSON.parse(JSON.stringify(merged));
+                return merged;
             } catch (err) {
-                return JSON.parse(JSON.stringify(DEFAULT_STORE));
+                return JSON.parse(JSON.stringify(memoryFallbackStore));
             }
         }
 
         let store = getStoreData();
         let activeOptionGroups = [];
-
-        function initDashboard() {
-            try {
-                const titleEl = document.getElementById('admin-store-name');
-                if (titleEl) titleEl.textContent = (store.name || "Store") + " Admin";
-                renderAdminItems();
-                renderAdminCategories();
-                loadSettings();
-            } catch (err) {
-                console.error("Dashboard init error:", err);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", initDashboard);
+        let editingItemId = null;
 
         function saveStore() {
+            memoryFallbackStore = JSON.parse(JSON.stringify(store));
             try {
-                localStorage.setItem('wh_store_data', JSON.stringify(store));
+                window.localStorage.setItem("wh_store_data", JSON.stringify(store));
+                return true;
             } catch (err) {
-                alert("Could not save to browser storage. Check browser privacy/storage settings.");
+                return false;
             }
         }
 
-        function resetDemoData() {
-            if (confirm("Reset store data back to default demo items?")) {
-                store = JSON.parse(JSON.stringify(DEFAULT_STORE));
-                saveStore();
-                initDashboard();
-            }
+        function initDashboard() {
+            document.getElementById("admin-store-name").textContent = (store.name || "Store") + " Admin";
+            renderAdminItems();
+            renderAdminCategories();
+            loadSettings();
         }
 
         function switchTab(tab) {
-            ['items', 'categories', 'settings'].forEach(t => {
-                document.getElementById(`admin-tab-${t}`).classList.toggle('hidden', t !== tab);
+            ["items", "categories", "settings"].forEach(t => {
+                document.getElementById(`admin-tab-${t}`).classList.toggle("hidden", t !== tab);
                 const btn = document.getElementById(`tab-btn-${t}`);
                 btn.className = t === tab
-                    ? "py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold cursor-pointer"
-                    : "py-2 hover:text-slate-700 cursor-pointer";
+                    ? "admin-tab-btn py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold cursor-pointer"
+                    : "admin-tab-btn py-2 hover:text-slate-700 cursor-pointer";
             });
-            if (tab === 'settings') loadSettings();
+            if (tab === "settings") loadSettings();
+            if (tab === "categories") renderAdminCategories();
+            if (tab === "items") renderAdminItems();
         }
 
         function renderAdminItems() {
-            const container = document.getElementById('admin-items-list');
+            const container = document.getElementById("admin-items-list");
             if (!store.items || store.items.length === 0) {
                 container.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-xl border">No products yet. Click "Add New Product" above.</div>`;
                 return;
             }
-            container.innerHTML = store.items.map(item => `
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-start gap-3">
-                        ${item.image ? `<img src="${item.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : '<div class="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0"><i class="fa-solid fa-utensils"></i></div>'}
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-base">${item.name}</h4>
-                            <div class="text-xs text-slate-500 font-medium">${item.category} • Base Price: <span class="text-emerald-600 font-bold">${store.currency}${parseFloat(item.price || 0).toFixed(2)}</span></div>
-                            
-                            ${(item.optionGroups && item.optionGroups.length > 0) ? `
-                                <div class="flex flex-wrap gap-1 mt-1.5">
-                                    ${item.optionGroups.map(grp => `
-                                        <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200">
-                                            <i class="fa-solid fa-tags text-[9px] text-slate-400"></i> ${grp.name} (${grp.options.length} variants)
-                                        </span>
-                                    `).join('')}
-                                </div>
-                            ` : `<div class="text-[11px] text-slate-400 italic mt-0.5">No variants attached</div>`}
+
+            container.innerHTML = store.items.map(item => {
+                const safeId = escapeHtml(item.id);
+                const safeName = escapeHtml(item.name);
+                const safeCat = escapeHtml(item.category);
+                const safeCurr = escapeHtml(store.currency || "$");
+                const safePrice = (parseFloat(item.price) || 0).toFixed(2);
+                const groups = Array.isArray(item.optionGroups) ? item.optionGroups : [];
+
+                return `
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            ${item.image
+                                ? `<img src="${escapeHtml(item.image)}" alt="${safeName}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">`
+                                : `<div class="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0"><i class="fa-solid fa-utensils"></i></div>`
+                            }
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base">${safeName}</h4>
+                                <div class="text-xs text-slate-500 font-medium">${safeCat} • Base Price: <span class="text-emerald-600 font-bold">${safeCurr}${safePrice}</span></div>
+                                ${groups.length > 0
+                                    ? `<div class="flex flex-wrap gap-1 mt-1.5">
+                                        ${groups.map(grp => `
+                                            <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200">
+                                                <i class="fa-solid fa-tags text-[9px] text-slate-400"></i> ${escapeHtml(grp.name)} (${(grp.options || []).length} variants)
+                                            </span>
+                                        `).join("")}
+                                       </div>`
+                                    : `<div class="text-[11px] text-slate-400 italic mt-0.5">No variants attached</div>`
+                                }
+                            </div>
+                        </div>
+                        <div class="flex gap-2 justify-end">
+                            <button type="button" data-action="edit-item" data-id="${safeId}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Product & Variants
+                            </button>
+                            <button type="button" data-action="delete-item" data-id="${safeId}" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold cursor-pointer">Delete</button>
                         </div>
                     </div>
-                    <div class="flex gap-2 justify-end">
-                        <button type="button" onclick="openItemModal('${item.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer">
-                            <i class="fa-solid fa-pen-to-square"></i> Edit Product & Variants
-                        </button>
-                        <button type="button" onclick="deleteMenuItem('${item.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold cursor-pointer">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join("");
         }
 
         function openItemModal(itemId = null) {
-            const item = itemId ? store.items.find(i => i.id === itemId) : {
-                id: Date.now().toString(),
-                name: '',
-                description: '',
-                price: '',
-                category: store.categories.find(c => c !== "All") || 'Burgers',
-                image: '',
+            editingItemId = itemId ? String(itemId) : String(Date.now());
+            const existing = itemId ? store.items.find(i => String(i.id) === String(itemId)) : null;
+            const item = existing || {
+                id: editingItemId,
+                name: "",
+                description: "",
+                price: "",
+                category: store.categories.find(c => c !== "All") || "Burgers",
+                image: "",
                 optionGroups: []
             };
 
             activeOptionGroups = JSON.parse(JSON.stringify(item.optionGroups || []));
 
-            const modal = document.getElementById('item-modal-overlay');
-            const content = document.getElementById('modal-content');
+            const modal = document.getElementById("item-modal-overlay");
+            const content = document.getElementById("modal-content");
+            const nonAllCats = store.categories.filter(c => c !== "All");
+            const categoryChoices = nonAllCats.length ? nonAllCats : ["Burgers", "Pizzas", "Drinks", "Desserts"];
 
             content.innerHTML = `
                 <div class="space-y-4">
                     <div class="flex justify-between items-center border-b pb-3">
                         <div>
-                            <h3 class="font-bold text-slate-900 text-lg">${itemId ? 'Edit Product & Variants' : 'Add New Product'}</h3>
+                            <h3 class="font-bold text-slate-900 text-lg">${existing ? "Edit Product & Variants" : "Add New Product"}</h3>
                             <p class="text-xs text-slate-500">Define base product info and attach variant groups (sizes, options, add-ons).</p>
                         </div>
-                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+                        <button type="button" id="close-modal-btn" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
                     </div>
 
-                    <form id="admin-item-form" onsubmit="saveMenuItem(event, '${item.id}')" class="space-y-4 text-sm">
+                    <form id="admin-item-form" class="space-y-4 text-sm">
                         <div class="space-y-3">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b pb-1">1. Basic Details</h4>
                             <div>
                                 <label class="block font-medium text-slate-700 mb-1">Product Name *</label>
-                                <input type="text" id="admin-item-name" value="${item.name}" required placeholder="e.g. Gourmet Burger" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <input type="text" id="admin-item-name" value="${escapeHtml(item.name)}" required placeholder="e.g. Gourmet Burger" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                             </div>
 
                             <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-medium text-slate-700 mb-1">Base Price (${store.currency}) *</label>
-                                    <input type="number" step="0.01" id="admin-item-price" value="${item.price}" required placeholder="9.99" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block font-medium text-slate-700 mb-1">Category *</label>
-                                    <select id="admin-item-category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                                        ${store.categories.filter(c => c !== "All").map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block font-medium text-slate-700 mb-1">Description</label>
-                                <textarea id="admin-item-desc" rows="2" placeholder="Ingredients, taste profile..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">${item.description || ''}</textarea>
-                            </div>
-
-                            <div>
-                                <label class="block font-medium text-slate-700 mb-1">Image URL</label>
-                                <input type="url" id="admin-item-image" value="${item.image || ''}" placeholder="https://..." class="w-full px-3 py
+            
