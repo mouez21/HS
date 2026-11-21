@@ -236,13 +236,24 @@
             const content = document.getElementById('admin-content');
             const errEl = document.getElementById('login-error');
             if (errEl) errEl.classList.add('hidden');
-            if (overlay) overlay.classList.add('hidden');
-            if (content) content.classList.remove('hidden');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
+            }
+            if (content) {
+                content.classList.remove('hidden');
+                content.style.display = 'block';
+            }
 
-            document.getElementById('admin-store-name').textContent = (store.name || "Store") + " Admin";
-            renderAdminItems();
-            renderAdminCategories();
-            loadSettings();
+            try {
+                const titleEl = document.getElementById('admin-store-name');
+                if (titleEl) titleEl.textContent = (store.name || "Store") + " Admin";
+                renderAdminItems();
+                renderAdminCategories();
+                loadSettings();
+            } catch (err) {
+                console.error("Dashboard render error:", err);
+            }
         }
 
         function handleLoginSubmit(e) {
@@ -352,7 +363,4 @@
 
                     <form id="admin-item-form" onsubmit="saveMenuItem(event, '${item.id}')" class="space-y-4 text-sm">
                         <div class="space-y-3">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b pb-1">1. Basic Details</h4>
-                            <div>
-                                <label class="block font-medium text-slate-700 mb-1">Product Name *</label>
-                                <input type="text" id="admin-item-name" value="${item.name}" r
+                
