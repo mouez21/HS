@@ -11,22 +11,23 @@
 
     <!-- LOGIN OVERLAY -->
     <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-2xl max-w-sm w-full space-y-4 text-center shadow-2xl">
+        <form id="login-form" onsubmit="handleLoginSubmit(event)" class="bg-white p-6 rounded-2xl max-w-sm w-full space-y-4 text-center shadow-2xl">
             <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-lock"></i>
             </div>
             <h2 class="font-bold text-xl text-slate-900">Admin Login</h2>
             <p class="text-xs text-slate-500">Enter your PIN to manage products, variants, and store settings.</p>
-            <input type="password" id="pin-input" placeholder="Enter PIN (Default: 1234)" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-center text-lg font-bold tracking-widest focus:ring-2 focus:ring-emerald-500 outline-none">
-            <button onclick="authenticateAdmin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition">Login to Dashboard</button>
-        </div>
+            <input type="password" id="pin-input" autocomplete="current-password" placeholder="Enter PIN (Default: 1234)" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-center text-lg font-bold tracking-widest focus:ring-2 focus:ring-emerald-500 outline-none">
+            <p id="login-error" class="text-xs text-rose-600 font-medium hidden">Incorrect PIN. Try 1234.</p>
+            <button type="submit" id="login-btn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition cursor-pointer">Login to Dashboard</button>
+        </form>
     </div>
 
     <!-- MAIN ADMIN CONTENT -->
     <div id="admin-content" class="max-w-4xl mx-auto space-y-6 hidden">
         
         <!-- HEADER -->
-        <div class="flex items-center justify-between border-b pb-4">
+        <div class="flex items-center justify-between border-b pb-4 flex-wrap gap-3">
             <div>
                 <h1 id="admin-store-name" class="font-bold text-2xl text-slate-900">Store Admin</h1>
                 <p class="text-xs text-slate-500">Manage Menu Items, Product Variants, Opening Hours & Settings</p>
@@ -35,7 +36,7 @@
                 <a href="index.html" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-store"></i> View Storefront
                 </a>
-                <button onclick="resetDemoData()" class="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-1">
+                <button type="button" onclick="resetDemoData()" class="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-rotate-left"></i> Reset Demo
                 </button>
             </div>
@@ -43,9 +44,9 @@
 
         <!-- ADMIN TABS -->
         <div class="flex border-b border-slate-200 gap-6 text-sm font-medium text-slate-500">
-            <button onclick="switchTab('items')" id="tab-btn-items" class="py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold">Manage Products & Variants</button>
-            <button onclick="switchTab('categories')" id="tab-btn-categories" class="py-2 hover:text-slate-700">Categories</button>
-            <button onclick="switchTab('settings')" id="tab-btn-settings" class="py-2 hover:text-slate-700">Store & Hours Settings</button>
+            <button type="button" onclick="switchTab('items')" id="tab-btn-items" class="py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold cursor-pointer">Manage Products & Variants</button>
+            <button type="button" onclick="switchTab('categories')" id="tab-btn-categories" class="py-2 hover:text-slate-700 cursor-pointer">Categories</button>
+            <button type="button" onclick="switchTab('settings')" id="tab-btn-settings" class="py-2 hover:text-slate-700 cursor-pointer">Store & Hours Settings</button>
         </div>
 
         <!-- TAB 1: MENU ITEMS & VARIANTS -->
@@ -55,7 +56,7 @@
                     <h2 class="font-bold text-slate-800 text-lg">Products Menu</h2>
                     <p class="text-xs text-slate-500">Add products with custom size variants, options, and add-ons.</p>
                 </div>
-                <button onclick="openItemModal()" class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition shadow-sm flex items-center gap-2">
+                <button type="button" onclick="openItemModal()" class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition shadow-sm flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-plus"></i> Add New Product
                 </button>
             </div>
@@ -70,7 +71,7 @@
             <h2 class="font-bold text-slate-800 text-lg">Categories</h2>
             <div class="flex gap-2">
                 <input type="text" id="new-category-input" placeholder="Category name..." class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                <button onclick="addCategory()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800">Add Category</button>
+                <button type="button" onclick="addCategory()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 cursor-pointer">Add Category</button>
             </div>
 
             <ul id="admin-categories-list" class="divide-y divide-slate-100 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -127,7 +128,7 @@
             </div>
 
             <div class="pt-2">
-                <button onclick="saveSettings()" class="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition">Save Settings</button>
+                <button type="button" onclick="saveSettings()" class="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition cursor-pointer">Save Settings</button>
             </div>
         </div>
 
@@ -136,13 +137,13 @@
     <!-- ITEM / VARIANT EDIT MODAL -->
     <div id="item-modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-            <div id="modal-content" class="overflow-y-auto flex-1 p-6">
-                <!-- Dynamic Content for Admin Form -->
-            </div>
+            <div id="modal-content" class="overflow-y-auto flex-1 p-6"></div>
         </div>
     </div>
 
     <script>
+        const ADMIN_PIN = "1234";
+
         const DEFAULT_STORE = {
             name: "Gourmet House",
             greeting: "Fresh & Artisanal Dishes",
@@ -212,40 +213,68 @@
         };
 
         function getStoreData() {
-            const data = localStorage.getItem('wh_store_data');
-            if (!data) {
-                localStorage.setItem('wh_store_data', JSON.stringify(DEFAULT_STORE));
-                return DEFAULT_STORE;
+            try {
+                const raw = localStorage.getItem('wh_store_data');
+                if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STORE));
+                const parsed = JSON.parse(raw);
+                return {
+                    ...DEFAULT_STORE,
+                    ...parsed,
+                    categories: Array.isArray(parsed.categories) && parsed.categories.length ? parsed.categories : DEFAULT_STORE.categories,
+                    items: Array.isArray(parsed.items) ? parsed.items : DEFAULT_STORE.items
+                };
+            } catch (err) {
+                return JSON.parse(JSON.stringify(DEFAULT_STORE));
             }
-            return { ...DEFAULT_STORE, ...JSON.parse(data) };
         }
 
         let store = getStoreData();
         let activeOptionGroups = [];
 
+        function showDashboard() {
+            const overlay = document.getElementById('login-overlay');
+            const content = document.getElementById('admin-content');
+            const errEl = document.getElementById('login-error');
+            if (errEl) errEl.classList.add('hidden');
+            if (overlay) overlay.classList.add('hidden');
+            if (content) content.classList.remove('hidden');
+
+            document.getElementById('admin-store-name').textContent = (store.name || "Store") + " Admin";
+            renderAdminItems();
+            renderAdminCategories();
+            loadSettings();
+        }
+
+        function handleLoginSubmit(e) {
+            if (e) e.preventDefault();
+            authenticateAdmin();
+        }
+
         function authenticateAdmin() {
-            const pin = document.getElementById('pin-input').value;
-            if (pin === "1234" || pin === "") {
-                document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('admin-content').classList.remove('hidden');
-                document.getElementById('admin-store-name').textContent = store.name + " Admin";
-                renderAdminItems();
-                renderAdminCategories();
-                loadSettings();
+            const input = document.getElementById('pin-input');
+            const errEl = document.getElementById('login-error');
+            const pin = (input ? input.value : "").trim();
+
+            if (pin === ADMIN_PIN || pin === "") {
+                showDashboard();
             } else {
-                alert("Incorrect PIN code!");
+                if (errEl) errEl.classList.remove('hidden');
             }
         }
 
         function saveStore() {
-            localStorage.setItem('wh_store_data', JSON.stringify(store));
+            try {
+                localStorage.setItem('wh_store_data', JSON.stringify(store));
+            } catch (err) {
+                alert("Could not save to browser storage. Check browser privacy/storage settings.");
+            }
         }
 
         function resetDemoData() {
             if (confirm("Reset store data back to default demo items?")) {
                 store = JSON.parse(JSON.stringify(DEFAULT_STORE));
                 saveStore();
-                location.reload();
+                showDashboard();
             }
         }
 
@@ -253,7 +282,9 @@
             ['items', 'categories', 'settings'].forEach(t => {
                 document.getElementById(`admin-tab-${t}`).classList.toggle('hidden', t !== tab);
                 const btn = document.getElementById(`tab-btn-${t}`);
-                btn.className = t === tab ? "py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold" : "py-2 hover:text-slate-700";
+                btn.className = t === tab
+                    ? "py-2 text-emerald-600 border-b-2 border-emerald-600 font-semibold cursor-pointer"
+                    : "py-2 hover:text-slate-700 cursor-pointer";
             });
             if (tab === 'settings') loadSettings();
         }
@@ -270,7 +301,7 @@
                         ${item.image ? `<img src="${item.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : '<div class="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0"><i class="fa-solid fa-utensils"></i></div>'}
                         <div>
                             <h4 class="font-bold text-slate-800 text-base">${item.name}</h4>
-                            <div class="text-xs text-slate-500 font-medium">${item.category} • Base Price: <span class="text-emerald-600 font-bold">${store.currency}${parseFloat(item.price).toFixed(2)}</span></div>
+                            <div class="text-xs text-slate-500 font-medium">${item.category} • Base Price: <span class="text-emerald-600 font-bold">${store.currency}${parseFloat(item.price || 0).toFixed(2)}</span></div>
                             
                             ${(item.optionGroups && item.optionGroups.length > 0) ? `
                                 <div class="flex flex-wrap gap-1 mt-1.5">
@@ -284,10 +315,10 @@
                         </div>
                     </div>
                     <div class="flex gap-2 justify-end">
-                        <button onclick="openItemModal('${item.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1">
+                        <button type="button" onclick="openItemModal('${item.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer">
                             <i class="fa-solid fa-pen-to-square"></i> Edit Product & Variants
                         </button>
-                        <button onclick="deleteMenuItem('${item.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold">Delete</button>
+                        <button type="button" onclick="deleteMenuItem('${item.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold cursor-pointer">Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -316,7 +347,7 @@
                             <h3 class="font-bold text-slate-900 text-lg">${itemId ? 'Edit Product & Variants' : 'Add New Product'}</h3>
                             <p class="text-xs text-slate-500">Define base product info and attach variant groups (sizes, options, add-ons).</p>
                         </div>
-                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
                     </div>
 
                     <form id="admin-item-form" onsubmit="saveMenuItem(event, '${item.id}')" class="space-y-4 text-sm">
@@ -324,22 +355,4 @@
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b pb-1">1. Basic Details</h4>
                             <div>
                                 <label class="block font-medium text-slate-700 mb-1">Product Name *</label>
-                                <input type="text" id="admin-item-name" value="${item.name}" required placeholder="e.g. Gourmet Burger" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-medium text-slate-700 mb-1">Base Price (${store.currency}) *</label>
-                                    <input type="number" step="0.01" id="admin-item-price" value="${item.price}" required placeholder="9.99" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block font-medium text-slate-700 mb-1">Category *</label>
-                                    <select id="admin-item-category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
-                                        ${store.categories.filter(c => c !== "All").map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block font-medium text-slate-700 mb-1">Description</label>
-                                <textarea id="admin-item-desc" rows="2" placeholder="Ingredients, taste profile..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">${item.desc2
+                                <input type="text" id="admin-item-name" value="${item.name}" r
